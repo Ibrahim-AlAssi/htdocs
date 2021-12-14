@@ -18,7 +18,7 @@
       
         <!-- Wrapper for slides -->
         <div class="carousel-inner">
-           
+          
           @foreach ($Prodect as $index => $item)
           <div class="item {{$index==0?'active':''}}">
             <img src="{{$item->gallery }}" alt="Chania">

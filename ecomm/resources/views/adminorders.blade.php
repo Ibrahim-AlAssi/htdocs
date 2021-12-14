@@ -22,29 +22,17 @@ use App\Models\prodect;
            <div class=" row searched-item cart-list-devider">
            
             <div class="col-sm-3">
-              <?php
-              $iP=$item->product_id;
-              $image = prodect::find($iP);
               
-              
-
-    ?>
               <a href="detail/{{$item->product_id}}">
-                  <img class="trending-image" src="{{$image->gallery}}">
+                  <img class="trending-image" src="{{$item->product->gallery}}">
                 </a>
            </div>
            
             <div class="col-sm-4">
-  <?php
-              $id=$item->user_id;
-              $data = User::find($id);
-              
-              
-
-    ?>
+ 
                    <div class="">
                     <h2>{{$item->id}}</h2>
-                    <h2>Name :{{$data->name}}</h2>
+                    <h2>Name :{{$item->user->name}}</h2>
                     <h2>Delivery Status :{{$item->status}}</h2>
                      <h5>Payment Method :{{$item->payment_method}}</h5>
                      <h5>Payment Status :{{$item->payment_status}}</h5>

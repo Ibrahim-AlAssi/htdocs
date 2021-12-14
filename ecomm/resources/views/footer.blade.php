@@ -1,12 +1,9 @@
 <style>
-  .container{
-    margin: 0%;
   
-  }
 
  </style>
  
-<div style="clear:both" class="container">
+<div style="clear:both" class="">
   <h2>Panel Footer</h2>
   <div  class="panel panel-default">
     <div class="panel-heading">Panel Heading</div>

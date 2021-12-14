@@ -19,6 +19,10 @@
 
 
 <div class=" custom-product">
+  @if (user() && user()->hasRole('owner|admin')) 
+                
+                <h1>welcome admin</h1>
+ @endif
     <div id="myCarousel" class="carousel slide" data-ride="carousel">
         <!-- Indicators -->
         <ol class="carousel-indicators">
