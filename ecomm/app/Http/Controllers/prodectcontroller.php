@@ -7,67 +7,81 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use App\Models\prodect;
 use App\Models\cart;
+use App\Models\Contacts;
 use App\Models\orders;
+use App\Models\Slider;
 use App\Models\User;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use PhpParser\Node\Stmt\Break_;
+use Illuminate\Support\Str;
 
 class  prodectcontroller extends Controller
 {
 
     //
+    // function index()
+    // {
+    //    // $user = Auth::user();
+    //   // $user && $user->hasRole('owner|admin')
+    //     //$admin='Admin';
+    //     //$sureadmin= Auth::user()->roles->first()->display_name;
+    //     $Prodect = prodect::all();
+    //     if (user() && user()->hasRole('owner|admin')) {
+    //         return view("home", compact('Prodect'));
+    //     }
+
+    //     return view("prodect", compact('Prodect'));
+    // }
+
+
     function index()
     {
        // $user = Auth::user();
-      // $user && $user->hasRole('owner|admin')
-        //$admin='Admin';
-        //$sureadmin= Auth::user()->roles->first()->display_name;
-        $Prodect = prodect::all();
-        if (user() && user()->hasRole('owner|admin')) {
-            return view("home", compact('Prodect'));
-        }
-
-        return view("prodect", compact('Prodect'));
+      
+        $slider = Slider::all();
+       // if ($user && $user->hasRole('owner|admin')) {
+       //     return view("home", compact('Prodect'));
+      //  }
+    
+      $newprodect1 = prodect::orderByDesc("created_at")->take(8)->get();
+      $newprodect2 = $newprodect1->reverse()->take(4);
+      $newprodect3 = $newprodect1->take(4);
+      $random =prodect::inRandomOrder()->limit(3)->get();
+      $random1 =prodect::inRandomOrder()->limit(3)->get();
+     
+     
+     
+      
+     
+    return view("index", compact('slider', 'newprodect3','newprodect2','random','random1'));
     }
 
-
-
-
-    function home()
-    {
-        // if(Auth::user()->hasRole('user')){
-        //    $Prodect = prodect::all();
-
-        //  return view("/prodect", compact('Prodect'));
-        //}else{
-        $Prodect = prodect::all();
-        return view("/home", compact('Prodect'));
-    }
-
-
-
-
-
-    function image()
+    function listview()
     {
         $Prodect = prodect::all();
+         return view("list-view", compact('Prodect'));
 
-        return view("image", compact('Prodect'));
+
     }
-    function detail($id)
+
+    function gridview()
+    {
+        $Prodect = prodect::all();
+         return view("gridview", compact('Prodect'));
+
+
+    }
+
+    function prodectdetail($id)
     {
         $data = prodect::find($id);
-
-        return view("detail", compact('data'));
+        
+        return view("/prodectdetails", compact('data'));
     }
-    function search(Request $req)
-    {
 
-        $data = prodect::where('name', 'like', '%' . $req->input('query') . '%')->get();
-        return view("search", compact('data'));
-    }
+
     function addtocart(Request $req)
     {
         // if user login
@@ -82,19 +96,18 @@ class  prodectcontroller extends Controller
             return redirect('/login');
         }
     }
-    public static function cart()
-    {
-        $it = Auth::user('user')->id;
 
-        $user_id = $it;
-        $Cart = new cart;
-        return $Cart::where('eco1s_id', $user_id)->count();
-    }
     function cartlist()
     {
         $it = Auth::user('user')->id;
 
         $userId = $it;
+        $totalprice = DB::table('cart')
+
+
+            ->join('prodect', 'cart.prodect_id', '=', 'prodect.id')
+            ->where('cart.eco1s_id', $userId)
+           ->sum('prodect.price');
         $prodoct = DB::table('cart')
 
 
@@ -103,26 +116,33 @@ class  prodectcontroller extends Controller
             //->select('prodect.*',) //send prodect id to  return view
             ->select('prodect.*', 'cart.id as cart_id') // send cart id to return view
             ->get();
-        return view('cartlist', ['prodect' => $prodoct]);
+        return view('carts', ['prodect' => $prodoct],['prodects' => $totalprice]);
+
     }
+    
+
+    function search(Request $req)
+    {
+       // $data = prodect::where("name","like","%".$req."%")->get();
+        $data = prodect::where('name', 'like', '%' . $req->input('query') . '%')->get();
+        return view("search", compact('data'));
+    }
+
     function removecart($id)
     {
         cart::destroy($id);
-        return redirect('/cartlist');
+        return redirect('/carts');
     }
 
-    function order()
+    public static function cart()
     {
+        $it = Auth::user('user')->id;
 
-        $userId = Auth::user('user')->id;
-        $prodocts = DB::table('cart')
-
-
-            ->join('prodect', 'cart.prodect_id', '=', 'prodect.id')
-            ->where('cart.eco1s_id', $userId)
-            ->sum('prodect.price');
-        return view('/ordernow', ['prodect' => $prodocts]);
+        $user_id = $it;
+        $Cart = new cart;
+        return $Cart::where('eco1s_id', $user_id)->count();
     }
+
     function orderPlace(Request $req)
     {
         $userId = Auth::user('user')->id;
@@ -141,6 +161,107 @@ class  prodectcontroller extends Controller
         $req->input();
         return redirect('/');
     }
+
+    function postcontacts(Request $req){
+        $contacts= new Contacts;
+        $contacts->user_id=$req->id;
+        $contacts->title=$req->title;
+        $contacts->subject=$req->subject;
+        $contacts->save();
+        return redirect('/');
+
+
+    }
+
+    function myOrder()
+    {
+        $userId = Auth::user('user')->id;
+        $orders = DB::table('orders')
+            ->join('prodect', 'orders.product_id', '=', 'prodect.id')
+            ->where('orders.user_id', $userId)
+            ->get();
+
+        return view('myorder', ['orders' => $orders]);
+    }
+
+    
+
+
+
+    function home()
+    {
+        // if(Auth::user()->hasRole('user')){
+        //    $Prodect = prodect::all();
+
+        //  return view("/prodect", compact('Prodect'));
+        //}else{
+        $Prodect = prodect::all();
+        return view("/home", compact('Prodect'));
+    }
+
+    
+
+
+
+
+   
+    function detail($id)
+    {
+        $data = prodect::find($id);
+
+        return view("detail", compact('data'));
+    }
+    
+    function addtcart(Request $req)
+    {
+        // if user login
+        if (Auth::check()) {
+            $it = Auth::user('user')->id;
+            $Cart = new cart;
+            $Cart->eco1s_id = $it;
+            $Cart->prodect_id = $req->prodect_id;
+            $Cart->save();
+            return redirect('/');
+        } else {
+            return redirect('/login');
+        }
+    }
+
+   
+   
+  
+   
+
+    function order()
+    {
+
+        $userId = Auth::user('user')->id;
+        $prodocts = DB::table('cart')
+
+
+            ->join('prodect', 'cart.prodect_id', '=', 'prodect.id')
+            ->where('cart.eco1s_id', $userId)
+            ->sum('prodect.price');
+        return view('/ordernow', ['prodect' => $prodocts]);
+    }
+    // function orderPlace(Request $req)
+    // {
+    //     $userId = Auth::user('user')->id;
+    //     $allCart = Cart::where('eco1s_id', $userId)->get();
+    //     foreach ($allCart as $cart) {
+    //         $order = new orders;
+    //         $order->product_id = $cart['prodect_id'];
+    //         $order->user_id = $cart['eco1s_id'];
+    //         $order->status = "pending";
+    //         $order->payment_method = $req->payment;
+    //         $order->payment_status = "pending";
+    //         $order->address = $req->address;
+    //         $order->save();
+    //         Cart::where('eco1s_id', $userId)->delete();
+    //     }
+    //     $req->input();
+    //     return redirect('/');
+    // }
     function myOrders()
     {
         $userId = Auth::user('user')->id;

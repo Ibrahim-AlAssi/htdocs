@@ -5,6 +5,10 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\prodectcontroller;
 
+use App\Http\Controllers\Contactscontroller;
+
+
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -26,7 +30,7 @@ Route::get("removecart/{id}",[prodectcontroller::class,'removeCart']);
 Route::get("ordernow",[prodectcontroller::class,'order']); 
 Route::post("orderPlace",[prodectcontroller::class,'orderPlace']);
 Route::get("myorders",[prodectcontroller::class,'myOrders']);
-Route::post("addtocart",[prodectcontroller::class,'addtocart']);
+Route::post("addtocart",[prodectcontroller::class,'addtcart']);
     
  
  });
@@ -54,15 +58,53 @@ Route::get("/orderhistory",[prodectcontroller::class,'orderhistory']);
     
 
 });
+//new router for new website
+
+
+Route::get('/headers', function () {
+    return view('headers');
+});
+Route::get('/index', function () {
+    return view('index');
+});
+
+Route::get('/myaccount', function () {
+    return view('myaccount');
+});
+Route::get('/contact', function () {
+    return view('contacts');
+});
+
+//new 
+
+Route::get("/",[prodectcontroller::class,'index']);
+
+Route::get("gridview",[prodectcontroller::class,'gridview']);
+Route::get("/list-view",[prodectcontroller::class,'listview']);
+Route::get("/prodectdetails-{id}",[prodectcontroller::class,'prodectdetail']);
+Route::post("cart",[prodectcontroller::class,'addtocart']);
+Route::get("carts",[prodectcontroller::class,'cartList']);
+Route::get("removecart-{id}",[prodectcontroller::class,'removeCart']); 
+Route::get("myorder",[prodectcontroller::class,'myOrder']);
+Route::post("/postcontacts",[prodectcontroller::class,'postcontacts']);
+
+ 
+
+
+
 
 Route::get('/login', function () {
     return view('login');
+   
 });
 
 
+//end
 
 
-Route::get("/",[prodectcontroller::class,'index']);
+
+//Route::get("/",[prodectcontroller::class,'index']);
+
 Route::get("detail/{id}",[prodectcontroller::class,'detail']);
 Route::get("search",[prodectcontroller::class,'search']);
 
