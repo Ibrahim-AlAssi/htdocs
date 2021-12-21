@@ -15,6 +15,6 @@ class orders extends Model
 
     }
     public function user(){
-        return $this->belongsTo(prodect::class);
+        return $this->belongsTo(User::class);
     }
 }

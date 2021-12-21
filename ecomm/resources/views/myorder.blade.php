@@ -24,7 +24,7 @@
 				@foreach ($orders as $item) 
                 <tr>
                   <td><img width="100" src="{{$item->gallery}}" alt=""></td>
-                  <td>{{$item->name}}<br>category:{{$item->category}} 
+                  <td>{{$item->name}}<br>category:{{$item->category}} hi</td>
                   <td> {{$item->status}} </td>
                   <td>
 					{{$item->payment_method}}

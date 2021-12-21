@@ -184,6 +184,118 @@ class  prodectcontroller extends Controller
         return view('myorder', ['orders' => $orders]);
     }
 
+    function adminprodect(Request $req)
+    {   $Prodect = prodect::all();
+        return view("/addproduct", compact('Prodect'));
+        
+    }
+    function editproduct(Request $req){
+        $input = $req->all();
+        if ($req->hasFile('image')) {
+            $imagepath = "public/images";
+            $image = $req->file('image');
+            $imagename = $image->getClientOriginalName();
+            $path = $req->file('image')->storeAs($imagepath, $imagename);
+            $input['image'] = $imagename;
+        }
+
+        $pathimage = "/storage/images/$imagename";
+
+        
+
+
+        $Prodect = prodect::find($req->id);
+        $Prodect->name=$req->name;
+        $Prodect->price=$req->price;
+        $Prodect->category=$req->category;
+        $Prodect->description=$req->description;
+        $Prodect->gallery = $pathimage;
+        $Prodect->save();
+        return redirect('/adminprodect');
+    }
+
+    function removeproduct($id){
+        prodect::destroy($id);
+        return redirect('/adminprodect');
+    }
+    function addproduct(Request $req){
+        $input = $req->all();
+        if ($req->hasFile('image')) {
+            $imagepath = "public/images";
+            $image = $req->file('image');
+            $imagename = $image->getClientOriginalName();
+            $path = $req->file('image')->storeAs($imagepath, $imagename);
+            $input['image'] = $imagename;
+        }
+
+        $pathimage = "/storage/images/$imagename";
+
+        $ADDprodect = new prodect();
+        $ADDprodect->name = $req->name;
+        $ADDprodect->category = $req->category;
+        $ADDprodect->price = $req->price;
+        $ADDprodect->description = $req->description;
+        $ADDprodect->gallery = $pathimage;
+        $ADDprodect->save();
+        return redirect('/adminprodect');
+
+    }
+
+    function admincontacts(){
+    
+        $contacts= Contacts::with("user")->orderByDesc("created_at")
+        ->get();
+      
+
+        return view('/admincontacts', ['contacts' => $contacts]);
+        
+    }
+
+    function orderlist()
+    {
+        $pending = 'pending';
+
+
+        $orders= orders::with("product","user")
+        ->where('orders.status', $pending)
+        ->get();
+      //  $orders = DB::table('orders')
+         //   ->join('prodect', 'orders.product_id', '=', 'prodect.id')
+            // ->select('prodect.*','cart.id as cart_id')
+        //    ->select('orders.*', 'orders.id as orders_id')
+         //   ->where('orders.status', $pending)
+          //  ->get();
+
+        return view('adminorder', ['orders' => $orders]);
+    }
+
+    function orderhistory()
+    {
+        $pending = 'confrimed';
+
+
+
+        $orders = orders::with("product","user")
+            
+            // ->select('prodect.*','cart.id as cart_id')
+            
+            ->where('orders.status', $pending)
+            ->get();
+
+        return view('adminhistory', ['orders' => $orders]);
+    }
+    function confrim($id)
+    {
+        $order = orders::find($id);
+
+
+
+        $order->status = "confrimed";
+        $order->payment_status = "done";
+        $order->save();
+        return redirect('/adminorders');
+    }
+
     
 
 
@@ -205,45 +317,45 @@ class  prodectcontroller extends Controller
 
 
    
-    function detail($id)
-    {
-        $data = prodect::find($id);
+    // function detail($id)
+    // {
+    //     $data = prodect::find($id);
 
-        return view("detail", compact('data'));
-    }
+    //     return view("detail", compact('data'));
+    // }
     
-    function addtcart(Request $req)
-    {
-        // if user login
-        if (Auth::check()) {
-            $it = Auth::user('user')->id;
-            $Cart = new cart;
-            $Cart->eco1s_id = $it;
-            $Cart->prodect_id = $req->prodect_id;
-            $Cart->save();
-            return redirect('/');
-        } else {
-            return redirect('/login');
-        }
-    }
+    // function addtcart(Request $req)
+    // {
+    //     // if user login
+    //     if (Auth::check()) {
+    //         $it = Auth::user('user')->id;
+    //         $Cart = new cart;
+    //         $Cart->eco1s_id = $it;
+    //         $Cart->prodect_id = $req->prodect_id;
+    //         $Cart->save();
+    //         return redirect('/');
+    //     } else {
+    //         return redirect('/login');
+    //     }
+    // }
 
    
    
   
    
 
-    function order()
-    {
+    // function order()
+    // {
 
-        $userId = Auth::user('user')->id;
-        $prodocts = DB::table('cart')
+    //     $userId = Auth::user('user')->id;
+    //     $prodocts = DB::table('cart')
 
 
-            ->join('prodect', 'cart.prodect_id', '=', 'prodect.id')
-            ->where('cart.eco1s_id', $userId)
-            ->sum('prodect.price');
-        return view('/ordernow', ['prodect' => $prodocts]);
-    }
+    //         ->join('prodect', 'cart.prodect_id', '=', 'prodect.id')
+    //         ->where('cart.eco1s_id', $userId)
+    //         ->sum('prodect.price');
+    //     return view('/ordernow', ['prodect' => $prodocts]);
+    // }
     // function orderPlace(Request $req)
     // {
     //     $userId = Auth::user('user')->id;
@@ -262,126 +374,116 @@ class  prodectcontroller extends Controller
     //     $req->input();
     //     return redirect('/');
     // }
-    function myOrders()
-    {
-        $userId = Auth::user('user')->id;
-        $orders = DB::table('orders')
-            ->join('prodect', 'orders.product_id', '=', 'prodect.id')
-            ->where('orders.user_id', $userId)
-            ->get();
+    // function myOrders()
+    // {
+    //     $userId = Auth::user('user')->id;
+    //     $orders = DB::table('orders')
+    //         ->join('prodect', 'orders.product_id', '=', 'prodect.id')
+    //         ->where('orders.user_id', $userId)
+    //         ->get();
 
-        return view('myorders', ['orders' => $orders]);
-    }
-
-
-    function addprodect(Request $req)
-    {
-        $input = $req->all();
-        if ($req->hasFile('image')) {
-            $imagepath = "public/images";
-            $image = $req->file('image');
-            $imagename = $image->getClientOriginalName();
-            $path = $req->file('image')->storeAs($imagepath, $imagename);
-            $input['image'] = $imagename;
-        }
-
-        $pathimage = "/storage/images/$imagename";
-
-        $ADDprodect = new prodect();
-        $ADDprodect->name = $req->name;
-        $ADDprodect->Category = $req->Category;
-        $ADDprodect->Price = $req->Price;
-        $ADDprodect->description = $req->DESCRIPTION;
-        $ADDprodect->gallery = $pathimage;
-        $ADDprodect->save();
-        return redirect('/addprodect');
-    }
-
-    function prodectlist()
-    {
-        $prodect = prodect::all();
-        return view("prodectlist", compact('prodect'));
-    }
-    function removeprodect($id)
-    {
-
-        $cartt = cart::where('prodect_id', '=', $id)->delete();
-        prodect::destroy($id);
+    //     return view('myorders', ['orders' => $orders]);
+    // }
 
 
-        return redirect('/prodectlist');
-    }
-    function editprodect($id)
-    {
+    // function addprodect(Request $req)
+    // {
+    //     $input = $req->all();
+    //     if ($req->hasFile('image')) {
+    //         $imagepath = "public/images";
+    //         $image = $req->file('image');
+    //         $imagename = $image->getClientOriginalName();
+    //         $path = $req->file('image')->storeAs($imagepath, $imagename);
+    //         $input['image'] = $imagename;
+    //     }
 
-        $data = prodect::find($id);
+    //     $pathimage = "/storage/images/$imagename";
 
-        return view("editprodect", compact('data'));
-    }
-    function editedprodect(Request $req)
-    {
-        $input = $req->all();
-        if ($req->hasFile('image')) {
-            $imagepath = "public/images";
-            $image = $req->file('image');
-            $imagename = $image->getClientOriginalName();
-            $path = $req->file('image')->storeAs($imagepath, $imagename);
-            $input['image'] = $imagename;
-        }
-        $pathimage = "/storage/images/$imagename";
-        $data = prodect::find($req->id);
+    //     $ADDprodect = new prodect();
+    //     $ADDprodect->name = $req->name;
+    //     $ADDprodect->Category = $req->Category;
+    //     $ADDprodect->Price = $req->Price;
+    //     $ADDprodect->description = $req->DESCRIPTION;
+    //     $ADDprodect->gallery = $pathimage;
+    //     $ADDprodect->save();
+    //     return redirect('/addprodect');
+    // }
 
-        $data->id = $req->id;
-        $data->name = $req->name;
-        $data->Category = $req->Category;
-        $data->Price = $req->Price;
-        $data->description = $req->DESCRIPTION;
-        $data->gallery = $pathimage;
-        $data->save();
-        return redirect('/prodectlist');
-    }
+    // function prodectlist()
+    // {
+    //     $prodect = prodect::all();
+    //     return view("prodectlist", compact('prodect'));
+    // }
+    // function removeprodect($id)
+    // {
 
-    function orderlist()
-    {
-        $pending = 'pending';
+    //     $cartt = cart::where('prodect_id', '=', $id)->delete();
+    //     prodect::destroy($id);
 
 
-        $orders= orders::with("product","user")
-        ->where('orders.status', $pending)
-        ->get();
-      //  $orders = DB::table('orders')
-         //   ->join('prodect', 'orders.product_id', '=', 'prodect.id')
-            // ->select('prodect.*','cart.id as cart_id')
-        //    ->select('orders.*', 'orders.id as orders_id')
-         //   ->where('orders.status', $pending)
-          //  ->get();
+    //     return redirect('/prodectlist');
+    // }
+    // function editprodect($id)
+    // {
 
-        return view('adminorders', ['orders' => $orders]);
-    }
-    function confrim($id)
-    {
-        $order = orders::find($id);
+    //     $data = prodect::find($id);
+
+    //     return view("editprodect", compact('data'));
+    // }
+    // function editedprodect(Request $req)
+    // {
+    //     $input = $req->all();
+    //     if ($req->hasFile('image')) {
+    //         $imagepath = "public/images";
+    //         $image = $req->file('image');
+    //         $imagename = $image->getClientOriginalName();
+    //         $path = $req->file('image')->storeAs($imagepath, $imagename);
+    //         $input['image'] = $imagename;
+    //     }
+    //     $pathimage = "/storage/images/$imagename";
+    //     $data = prodect::find($req->id);
+
+    //     $data->id = $req->id;
+    //     $data->name = $req->name;
+    //     $data->Category = $req->Category;
+    //     $data->Price = $req->Price;
+    //     $data->description = $req->DESCRIPTION;
+    //     $data->gallery = $pathimage;
+    //     $data->save();
+    //     return redirect('/prodectlist');
+    // }
+
+    // function orderlist()
+    // {
+    //     $pending = 'pending';
 
 
+    //     $orders= orders::with("product","user")
+    //     ->where('orders.status', $pending)
+    //     ->get();
+    //   //  $orders = DB::table('orders')
+    //      //   ->join('prodect', 'orders.product_id', '=', 'prodect.id')
+    //         // ->select('prodect.*','cart.id as cart_id')
+    //     //    ->select('orders.*', 'orders.id as orders_id')
+    //      //   ->where('orders.status', $pending)
+    //       //  ->get();
 
-        $order->status = "confrimed";
-        $order->payment_status = "done";
-        $order->save();
-        return redirect('/adminorders');
-    }
-    function orderhistory()
-    {
-        $pending = 'confrimed';
+    //     return view('adminorders', ['orders' => $orders]);
+   // }
+   
+    // function orderhistory()
+    // {
+    //     $pending = 'confrimed';
 
 
 
-        $orders = DB::table('orders')
-            ->join('prodect', 'orders.product_id', '=', 'prodect.id')
-            // ->select('prodect.*','cart.id as cart_id')
-            ->select('orders.*', 'orders.id as orders_id')
-            ->where('orders.status', $pending)
-            ->get();
+    //     $orders = DB::table('orders')
+    //         ->join('prodect', 'orders.product_id', '=', 'prodect.id')
+    //         // ->select('prodect.*','cart.id as cart_id')
+    //         ->select('orders.*', 'orders.id as orders_id')
+    //         ->where('orders.status', $pending)
+    //         ->get();
 
-        return view('adminorders', ['orders' => $orders]);
-    }
+    //     return view('adminorders', ['orders' => $orders]);
+    // }
 }
