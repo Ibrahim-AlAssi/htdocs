@@ -46,8 +46,10 @@ Subject:<b>{{$item->subject}}
 
 </div>
 </div>
-</div>
 
+
+</div>
+{{$contacts->links()}}
 </div>
 <!-- /. PAGE INNER  -->
 </div>

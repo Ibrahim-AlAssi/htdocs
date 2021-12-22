@@ -12,7 +12,7 @@
 		<div class="well well-small">
 		<h3 style="margin-bottom: 0px" >Our Products </h3>
 			<div class="row-fluid">
-				@foreach ($Prodect as $index => $item)  
+				@foreach ($Prodect as $item)  
 			  <ul class="thumbnails">
 				
 				<li style="margin: 4px" class="span4">
@@ -34,8 +34,11 @@
 				</li>
 				@endforeach
 			  </ul>
+			  
 			</div>
-	
+			<span>
+				{{$Prodect->links()}}
+			</span>  
 		
 		
 		</div>

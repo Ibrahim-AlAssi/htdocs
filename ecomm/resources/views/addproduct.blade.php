@@ -37,7 +37,13 @@
             
          
              <br><br><br><br><hr>
+             
         @endforeach
+        <hr style="border: 1px solid red;">
+             <span>
+                {{$Prodect->links()}}
+            </span>  
+            <hr style="border: 1px solid red;">
         <form class="form-horizontal" action="addproduct" method="POST" enctype="multipart/form-data">
             @csrf
             

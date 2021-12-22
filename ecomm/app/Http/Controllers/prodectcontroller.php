@@ -38,12 +38,12 @@ class  prodectcontroller extends Controller
 
     function index()
     {
-       // $user = Auth::user();
+        $user = Auth::user();
       
         $slider = Slider::all();
-       // if ($user && $user->hasRole('owner|admin')) {
-       //     return view("home", compact('Prodect'));
-      //  }
+        if ($user && $user->hasRole('owner|admin')) {
+           return view("indexadmin");
+        }
     
       $newprodect1 = prodect::orderByDesc("created_at")->take(8)->get();
       $newprodect2 = $newprodect1->reverse()->take(4);
@@ -60,7 +60,7 @@ class  prodectcontroller extends Controller
 
     function listview()
     {
-        $Prodect = prodect::all();
+        $Prodect = prodect::paginate(10);
          return view("list-view", compact('Prodect'));
 
 
@@ -68,7 +68,7 @@ class  prodectcontroller extends Controller
 
     function gridview()
     {
-        $Prodect = prodect::all();
+        $Prodect = prodect::paginate(12);
          return view("gridview", compact('Prodect'));
 
 
@@ -185,7 +185,7 @@ class  prodectcontroller extends Controller
     }
 
     function adminprodect(Request $req)
-    {   $Prodect = prodect::all();
+    {   $Prodect = prodect::paginate(10);
         return view("/addproduct", compact('Prodect'));
         
     }
@@ -215,7 +215,10 @@ class  prodectcontroller extends Controller
     }
 
     function removeproduct($id){
+        cart::where('prodect_id', $id)->delete();
         prodect::destroy($id);
+        orders::where('product_id', $id)->delete();
+        
         return redirect('/adminprodect');
     }
     function addproduct(Request $req){
@@ -244,7 +247,7 @@ class  prodectcontroller extends Controller
     function admincontacts(){
     
         $contacts= Contacts::with("user")->orderByDesc("created_at")
-        ->get();
+        ->paginate(3);
       
 
         return view('/admincontacts', ['contacts' => $contacts]);
@@ -258,7 +261,7 @@ class  prodectcontroller extends Controller
 
         $orders= orders::with("product","user")
         ->where('orders.status', $pending)
-        ->get();
+        ->paginate(10);
       //  $orders = DB::table('orders')
          //   ->join('prodect', 'orders.product_id', '=', 'prodect.id')
             // ->select('prodect.*','cart.id as cart_id')
@@ -280,7 +283,7 @@ class  prodectcontroller extends Controller
             // ->select('prodect.*','cart.id as cart_id')
             
             ->where('orders.status', $pending)
-            ->get();
+            ->paginate(10);
 
         return view('adminhistory', ['orders' => $orders]);
     }
@@ -293,7 +296,7 @@ class  prodectcontroller extends Controller
         $order->status = "confrimed";
         $order->payment_status = "done";
         $order->save();
-        return redirect('/adminorders');
+        return redirect('/adminorder');
     }
 
     

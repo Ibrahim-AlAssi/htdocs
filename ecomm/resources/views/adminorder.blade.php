@@ -42,6 +42,11 @@
                            
                        </tbody>
                    </table>
+                   <hr style="border: 1px solid red;">
+                   <span>
+                      {{$orders->links()}}
+                  </span>  
+                 
           </div>
         <hr />
         

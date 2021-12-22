@@ -16,7 +16,7 @@ class CreateProdectTable extends Migration
         Schema::create('prodect', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('price')->unique();
+            $table->string('price');
             $table->string('category');
             $table->string('description');
             $table->text('gallery');

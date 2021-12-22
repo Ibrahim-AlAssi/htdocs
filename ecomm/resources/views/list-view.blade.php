@@ -42,9 +42,12 @@ Body Section
         </div>
         <hr class="soften">
         @endforeach
+        <span>
+            {{$Prodect->links()}}
+        </span>  
     </div>
     </div>
     </div>
-   
+  
 
 @endsection
