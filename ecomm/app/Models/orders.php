@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class orders extends Model
 {
-    protected $table = 'orders';
+    protected $table = 'order';
     use HasFactory;
     public function product(){
-        return $this->belongsTo(prodect::class);
+        return $this->belongsTo(prodect::class,'prodect_id');
 
 
     }
     public function user(){
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class,'ecoms1_id');
     }
 }

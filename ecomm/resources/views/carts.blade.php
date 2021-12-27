@@ -21,28 +21,30 @@
 				</tr>
               </thead>
               <tbody>
-				@foreach ($prodect as $index => $item) 
+				@foreach ($prodect as  $item) 
+				
                 <tr>
-                  <td><img width="100" src="{{$item->gallery}}" alt=""></td>
-                  <td>{{$item->name}}<br>category:{{$item->category}} 
+                  <td><img width="100" src="{{$item->product->gallery}}" alt=""></td>
+                  <td>{{$item->name}}<br>category:{{$item->product->category}} 
                   <td> - </td>
                   <td><div class="btn-group">
 					
-					<a href="/removecart-{{$item->cart_id}}" class="shopBtn">Delete</a>
+					<a href="/removecart-{{$item->id}}" class="shopBtn">Delete</a>
 				   </div>
 				</td>
-                  <td>${{$item->price}}</td>
+                  <td>${{$item->product->price}}</td>
                   <td>
-					<input class="span1" style="max-width:34px" placeholder="1" id="appendedInputButtons" size="16" type="text" value="1">
+					<input class="span1" style="max-width:34px" name="quantity"  id="appendedInputButtons" size="16" type="text" value="{{$item->quantity}}"  disabled>
 				  
 				</td>
-                  <td>${{$item->price}}</td>
+				
+                  <td>${{$item->totalprice}}</td>
                 </tr>
 				@endforeach
 				
                 <tr>
                   <td colspan="6" class="alignR">Total products:	</td>
-                  <td style="font-weight: bold;" >${{$prodects}}</td>
+                  <td style="font-weight: bold;" >{{$prodects}}</td>
                 </tr>
                  
 				 
@@ -59,6 +61,7 @@
 				 <td>
 					<form action="/orderPlace" method="POST" >
 						@csrf
+					
 					  <div class="control-group">
 						<label class="span2 control-label" for="inputEmail">Address</Address></label>
 						<div class="controls">

@@ -21,7 +21,7 @@
                         @foreach ($orders as $item)
                            <tr style="padding: 0px">
                             <td><img style="margin-right: 0%" width="20%" src="{{$item->product->gallery}}"></td>
-                               <td>name:{{$item->user->name}}<br>category:{{$item->product->category}}<br>email:{{$item->user->name}}</td>
+                               <td>name:{{$item->user->name}}<br>category:{{$item->product->category}}<br>email:{{$item->user->name}}<br><p style="font-weight: bold">quantity:{{$item->quantity}}</p></td>
                              
                                 
                                <td>{{$item->status}}
@@ -30,7 +30,7 @@
                                <td>{{$item->payment_method}}</td>
                                
                                <td>{{$item->address}}</td>
-                               <td>${{$item->product->price}}</td>
+                               <td>${{$item->totalprice}}</td>
                                
                                
                            </tr>

@@ -23,13 +23,14 @@
 			<div class="span7">
 				<h3>{{$data['name']}}</h3>
 				<hr class="soft"/>
-				
 				<form class="form-horizontal qtyFrm"  action="/cart" method="POST">
 					@csrf
+				
 				  <div class="control-group">
-					<label class="control-label"><span>${{$data['price']}}</span></label>
+					<label class="control-label"><span >${{$data['price']}}</span></label>
+					<input type='hidden' id="price" name="prodect_id" value="{{$data['price']}}" >
 					<div class="controls">
-					
+						<input type="number" name="quantity" id="quantity" class="span6" placeholder="Qty." value="1">
 					</div>
 				  </div>
 				
@@ -38,8 +39,15 @@
 				  <h4>100 items in stock</h4>
 				  <p>{{$data['description']}}
 				  <p><br>
-				  <button type="submit" class="shopBtn"><span class=" icon-shopping-cart"></span> Add to cart</button>
+					
 				  <input type='hidden' name="prodect_id" value="{{$data['id']}}" >
+				  <input type='hidden' id="totalprice" name="totalprice"  value="1">
+						
+					  
+				  
+				  
+					  
+				  <button type="submit" onclick="myFunction()" class="shopBtn"><span class=" icon-shopping-cart"></span> Add to cart</button>
 				</form>
 			</div>
 			</div>
@@ -375,6 +383,16 @@
 </div>
 </div>
 </div> <!-- Body wrapper -->
+<script>
+function myFunction() {
 
+  
+  let x = document.getElementById("price").value;
+  let y = document.getElementById("quantity").value
+  let z = x * y;
+  document.getElementById("totalprice").value = z;
+  }
+  </script>
+	
 
 @endsection

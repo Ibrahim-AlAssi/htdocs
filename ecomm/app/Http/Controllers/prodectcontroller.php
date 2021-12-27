@@ -84,39 +84,54 @@ class  prodectcontroller extends Controller
 
     function addtocart(Request $req)
     {
+        $it = Auth::user('user')->id;
+        $check= cart::where('cart.eco1s_id',$it)->where('cart.prodect_id',$req->prodect_id)->first();
+       
         // if user login
-        if (Auth::check()) {
-            $it = Auth::user('user')->id;
+    if ($check==null) {
+      
+          
+            
             $Cart = new cart;
             $Cart->eco1s_id = $it;
+            $Cart->quantity = $req->quantity;
+            $Cart->totalprice=$req->totalprice;
             $Cart->prodect_id = $req->prodect_id;
             $Cart->save();
             return redirect('/');
         } else {
-            return redirect('/login');
+            
+            $check->quantity = $check->quantity+$req->quantity;
+            $check->totalprice=$check->totalprice+$req->totalprice;
+            $check->save();
+            return redirect('/');
         }
     }
 
     function cartlist()
     {
-        $it = Auth::user('user')->id;
+            
+       
+         $it = Auth::user('user')->id;
 
-        $userId = $it;
-        $totalprice = DB::table('cart')
-
-
-            ->join('prodect', 'cart.prodect_id', '=', 'prodect.id')
-            ->where('cart.eco1s_id', $userId)
-           ->sum('prodect.price');
-        $prodoct = DB::table('cart')
+         $userId = $it;
+        // $totalprice = DB::table('cart')
 
 
-            ->join('prodect', 'cart.prodect_id', '=', 'prodect.id')
-            ->where('cart.eco1s_id', $userId)
-            //->select('prodect.*',) //send prodect id to  return view
-            ->select('prodect.*', 'cart.id as cart_id') // send cart id to return view
-            ->get();
-        return view('carts', ['prodect' => $prodoct],['prodects' => $totalprice]);
+        //     ->join('prodect', 'cart.prodect_id', '=', 'prodect.id')
+        //     ->where('cart.eco1s_id', $userId)
+        //    ->sum('prodect.price');
+         
+      //    $carts= cart::with("product");
+     
+        
+        
+      $carts2= cart::with("product")
+
+            ->where('cart.eco1s_id', $userId)->sum('cart.totalprice');;
+             //send prodect id to  return view
+       $carts=user()->carts()->with("product")->get();
+        return view('carts', ['prodect' => $carts],['prodects' => $carts2]);
 
     }
     
@@ -149,12 +164,14 @@ class  prodectcontroller extends Controller
         $allCart = Cart::where('eco1s_id', $userId)->get();
         foreach ($allCart as $cart) {
             $order = new orders;
-            $order->product_id = $cart['prodect_id'];
-            $order->user_id = $cart['eco1s_id'];
+            $order->prodect_id = $cart['prodect_id'];
+            $order->ecoms1_id = $cart['eco1s_id'];
             $order->status = "pending";
             $order->payment_method = $req->payment;
             $order->payment_status = "pending";
             $order->address = $req->address;
+            $order->totalprice = $cart['totalprice'];
+            $order->quantity = $cart['quantity'];     
             $order->save();
             Cart::where('eco1s_id', $userId)->delete();
         }
@@ -174,14 +191,18 @@ class  prodectcontroller extends Controller
     }
 
     function myOrder()
-    {
-        $userId = Auth::user('user')->id;
-        $orders = DB::table('orders')
-            ->join('prodect', 'orders.product_id', '=', 'prodect.id')
-            ->where('orders.user_id', $userId)
+    { $userId = Auth::user('user')->id;
+        $carts2= cart::with("product")
+
+        ->where('cart.eco1s_id', $userId)->sum('cart.totalprice');;
+        
+       
+        $orders = DB::table('order')
+            ->join('prodect', 'order.prodect_id', '=', 'prodect.id')
+            ->where('order.ecoms1_id', $userId)
             ->get();
 
-        return view('myorder', ['orders' => $orders]);
+        return view('myorder', ['orders' => $orders],['prodects' => $carts2]);
     }
 
     function adminprodect(Request $req)
@@ -260,7 +281,7 @@ class  prodectcontroller extends Controller
 
 
         $orders= orders::with("product","user")
-        ->where('orders.status', $pending)
+        ->where('order.status', $pending)
         ->paginate(10);
       //  $orders = DB::table('orders')
          //   ->join('prodect', 'orders.product_id', '=', 'prodect.id')
@@ -282,7 +303,7 @@ class  prodectcontroller extends Controller
             
             // ->select('prodect.*','cart.id as cart_id')
             
-            ->where('orders.status', $pending)
+            ->where('order.status', $pending)
             ->paginate(10);
 
         return view('adminhistory', ['orders' => $orders]);

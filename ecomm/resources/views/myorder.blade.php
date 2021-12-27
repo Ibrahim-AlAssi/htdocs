@@ -24,7 +24,7 @@
 				@foreach ($orders as $item) 
                 <tr>
                   <td><img width="100" src="{{$item->gallery}}" alt=""></td>
-                  <td>{{$item->name}}<br>category:{{$item->category}} hi</td>
+                  <td>{{$item->name}}<br>category:{{$item->category}} <br>quantity:{{$item->quantity}} </td>
                   <td> {{$item->status}} </td>
                   <td>
 					{{$item->payment_method}}
@@ -36,9 +36,13 @@
 					{{$item->address}}
 				  
 				</td>
-                  <td>${{$item->price}}</td>
+                  <td>${{$item->totalprice}}</td>
                 </tr>
 				@endforeach
+        <tr>
+          <td colspan="6" class="alignR">Total products:	</td>
+          <td style="font-weight: bold;" >{{$prodects}}</td>
+        </tr>
 				
                
                  
